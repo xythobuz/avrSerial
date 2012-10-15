@@ -36,7 +36,7 @@
 #endif
 
 #ifdef FLOWCONTROL
-#if (RX_BUFFER_SIZE < 4) || (TX_BUFFER_SIZE < 4)
+#if (RX_BUFFER_SIZE < 8) || (TX_BUFFER_SIZE < 8)
 #error SERIAL BUFFER TOO SMALL!
 #endif
 #endif
@@ -44,6 +44,8 @@
 #if (RX_BUFFER_SIZE + TX_BUFFER_SIZE) >= (RAMEND - 0x60)
 #error SERIAL BUFFER TOO LARGE!
 #endif
+
+#define FLOWMARK 5
 
 uint8_t volatile rxBuffer[RX_BUFFER_SIZE];
 uint8_t volatile txBuffer[TX_BUFFER_SIZE];
@@ -69,7 +71,7 @@ ISR(SERIALRECIEVEINTERRUPT) { // Receive complete
 
 #ifdef FLOWCONTROL
     rxBufferElements++;
-    if ((flow == 1) && (rxBufferElements >= (RX_BUFFER_SIZE - 3))) {
+    if ((flow == 1) && (rxBufferElements >= (RX_BUFFER_SIZE - FLOWMARK))) {
         sendThisNext = XOFF;
         flow = 0;
         if (shouldStartTransmission) {
@@ -83,7 +85,7 @@ ISR(SERIALRECIEVEINTERRUPT) { // Receive complete
 
 ISR(SERIALTRANSMITINTERRUPT) { // Data register empty
 #ifdef FLOWCONTROL
-    if (sendThisNext != 0) {
+    if (sendThisNext) {
         SERIALDATA = sendThisNext;
         sendThisNext = 0;
     } else {
@@ -104,9 +106,9 @@ ISR(SERIALTRANSMITINTERRUPT) { // Data register empty
 #endif
 }
 
-uint8_t serialInit(uint16_t baud) {
+void serialInit(uint16_t baud) {
     // Default: 8N1
-    SERIALC |= (1 << SERIALUCSZ0) | (1 << SERIALUCSZ1);
+    SERIALC = (1 << SERIALUCSZ0) | (1 << SERIALUCSZ1);
 
     // Set baudrate
 #ifdef SERIALBAUD8
@@ -116,37 +118,28 @@ uint8_t serialInit(uint16_t baud) {
     SERIALUBRR = baud;
 #endif
 
-    SERIALB |= (1 << SERIALRXCIE); // Enable Interrupts
-
+    SERIALB = (1 << SERIALRXCIE); // Enable Interrupts
     SERIALB |= (1 << SERIALRXEN) | (1 << SERIALTXEN); // Enable Receiver/Transmitter
-
-    return 0;
 }
 
 void serialClose(void) {
     uint8_t sreg = SREG;
-
     sei();
-
-    while (SERIALB & (1 << SERIALUDRIE)); // Wait while interrupt is on...
-    // Indicates there is still a transmission going on
-
+    while (!serialTxBufferEmpty());
+    while (SERIALB & (1 << SERIALUDRE));
     cli();
-
-    SERIALB = 0; // Disable USART
-    SERIALC = 0; // Reset config
-#ifdef SERIALBAUD8
-    SERIALUBRRH = 0;
-    SERIALUBRRL = 0;
-#else
-    SERIALUBRR = 0;
-#endif
-
+    SERIALB = 0;
+    SERIALC = 0;
     rxRead = 0;
     txRead = 0;
     rxWrite = 0;
     txWrite = 0;
-
+    shouldStartTransmission = 1;
+#ifdef FLOWCONTROL
+    flow = 1;
+    sendThisNext = 0;
+    rxBufferElements = 0;
+#endif
     SREG = sreg;
 }
 
@@ -167,7 +160,7 @@ uint8_t serialGet(void) {
 
 #ifdef FLOWCONTROL
     rxBufferElements--;
-    if ((flow == 0) && serialRxBufferEmpty()) {
+    if ((flow == 0) && (rxBufferElements <= FLOWMARK)) {
         sendThisNext = XON;
         flow = 1;
         if (shouldStartTransmission) {
@@ -216,20 +209,20 @@ void serialWrite(uint8_t data) {
 #endif
     while (serialTxBufferFull());
 
-    //uint8_t sreg = SREG;
-    //cli();
+    uint8_t sreg = SREG;
+    cli();
     txBuffer[txWrite] = data;
     if (txWrite < (TX_BUFFER_SIZE - 1)) {
         txWrite++;
     } else {
         txWrite = 0;
     }
-    if (shouldStartTransmission == 1) {
+    if (shouldStartTransmission) {
         shouldStartTransmission = 0;
         SERIALB |= (1 << SERIALUDRIE); // Enable Interrupt
         SERIALA |= (1 << SERIALUDRE); // Trigger Interrupt
     }
-    //SREG = sreg;
+    SREG = sreg;
 }
 
 void serialWriteString(const char *data) {
