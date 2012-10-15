@@ -44,13 +44,13 @@ void serialClose(void);
 // Reception
 uint8_t serialHasChar(void);
 uint8_t serialGet(void); // Get a character. Always blocking
-uint8_t serialRxBufferFull(void); // 0 if full
+uint8_t serialRxBufferFull(void); // 1 if full
 uint8_t serialRxBufferEmpty(void); // 1 if empty
 
 // Transmission
 void serialWrite(uint8_t data);
 void serialWriteString(const char *data);
-uint8_t serialTxBufferFull(void); // 0 if full
+uint8_t serialTxBufferFull(void); // 1 if full
 uint8_t serialTxBufferEmpty(void); // 1 if empty
 
 #if  defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__) \
