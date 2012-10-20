@@ -126,7 +126,7 @@ void serialClose(void) {
     uint8_t sreg = SREG;
     sei();
     while (!serialTxBufferEmpty());
-    while (SERIALB & (1 << SERIALUDRE));
+    while (SERIALB & (1 << SERIALUDRIE)); // Wait while Transmit Interrupt is on
     cli();
     SERIALB = 0;
     SERIALC = 0;
@@ -143,6 +143,35 @@ void serialClose(void) {
     SREG = sreg;
 }
 
+void setFlow(uint8_t on) {
+#ifdef FLOWCONTROL
+    if (flow != on) {
+        if (on == 1) {
+            // Send XON
+            while (sendThisNext != 0);
+            sendThisNext = XON;
+            flow = 1;
+            if (shouldStartTransmission) {
+                shouldStartTransmission = 0;
+                SERIALB |= (1 << SERIALUDRIE);
+                SERIALA |= (1 << SERIALUDRE); // Trigger Interrupt
+            }
+        } else {
+            // Send XOFF
+            sendThisNext = XOFF;
+            flow = 0;
+            if (shouldStartTransmission) {
+                shouldStartTransmission = 0;
+                SERIALB |= (1 << SERIALUDRIE);
+                SERIALA |= (1 << SERIALUDRE); // Trigger Interrupt
+            }
+        }
+        // Wait till it's transmitted
+        while (SERIALB & (1 << SERIALUDRIE));
+    }
+#endif
+}
+
 // ---------------------
 // |     Reception     |
 // ---------------------
@@ -155,12 +184,18 @@ uint8_t serialHasChar(void) {
     }
 }
 
+uint8_t serialGetBlocking(void) {
+    while(!serialHasChar());
+    return serialGet();
+}
+
 uint8_t serialGet(void) {
     uint8_t c;
 
 #ifdef FLOWCONTROL
     rxBufferElements--;
     if ((flow == 0) && (rxBufferElements <= FLOWMARK)) {
+        while (sendThisNext != 0);
         sendThisNext = XON;
         flow = 1;
         if (shouldStartTransmission) {

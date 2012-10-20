@@ -24,7 +24,7 @@
 
 #include "serial.h"
 
-uint8_t serialInit(uint16_t baud) {
+void serialInit(uint16_t baud) {
     // Default: 8N1
     SERIALC |= (1 << SERIALUCSZ0);
     SERIALC |= (1 << SERIALUCSZ1);
@@ -38,8 +38,6 @@ uint8_t serialInit(uint16_t baud) {
 #endif
 
     SERIALB |= (1 << SERIALRXEN) | (1 << SERIALTXEN); // Enable Receiver/Transmitter
-
-    return 0;
 }
 
 void serialClose(void) {
@@ -54,6 +52,14 @@ void serialClose(void) {
 #else
     SERIALUBRR = 0;
 #endif
+}
+
+void setFlow(uint8_t on) {
+    if (on) {
+        serialWrite(0x11);
+    } else {
+        serialWrite(0x13);
+    }
 }
 
 // ---------------------
@@ -71,6 +77,10 @@ uint8_t serialHasChar(void) {
 uint8_t serialGet(void) {
     while(!serialHasChar());
     return SERIALDATA;
+}
+
+uint8_t serialGetBlocking(void) {
+    return serialGet();
 }
 
 uint8_t serialRxBufferFull(void) {
