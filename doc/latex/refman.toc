@@ -1,0 +1,40 @@
+\contentsline {chapter}{\numberline {1}Main Page}{1}{chapter.1}
+\contentsline {chapter}{\numberline {2}Module Index}{3}{chapter.2}
+\contentsline {section}{\numberline {2.1}Modules}{3}{section.2.1}
+\contentsline {chapter}{\numberline {3}File Index}{5}{chapter.3}
+\contentsline {section}{\numberline {3.1}File List}{5}{section.3.1}
+\contentsline {chapter}{\numberline {4}Module Documentation}{7}{chapter.4}
+\contentsline {section}{\numberline {4.1}U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}{7}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}Detailed Description}{8}{subsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1.2}Macro Definition Documentation}{8}{subsection.4.1.2}
+\contentsline {subsubsection}{\numberline {4.1.2.1}B\discretionary {-}{}{}A\discretionary {-}{}{}U\discretionary {-}{}{}D}{8}{subsubsection.4.1.2.1}
+\contentsline {subsubsection}{\numberline {4.1.2.2}F\discretionary {-}{}{}L\discretionary {-}{}{}O\discretionary {-}{}{}W\discretionary {-}{}{}C\discretionary {-}{}{}O\discretionary {-}{}{}N\discretionary {-}{}{}T\discretionary {-}{}{}R\discretionary {-}{}{}O\discretionary {-}{}{}L}{8}{subsubsection.4.1.2.2}
+\contentsline {subsubsection}{\numberline {4.1.2.3}F\discretionary {-}{}{}L\discretionary {-}{}{}O\discretionary {-}{}{}W\discretionary {-}{}{}M\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}K}{8}{subsubsection.4.1.2.3}
+\contentsline {subsubsection}{\numberline {4.1.2.4}R\discretionary {-}{}{}X\discretionary {-}{}{}\_\discretionary {-}{}{}\discretionary {-}{}{}B\discretionary {-}{}{}U\discretionary {-}{}{}F\discretionary {-}{}{}F\discretionary {-}{}{}E\discretionary {-}{}{}R\discretionary {-}{}{}\_\discretionary {-}{}{}\discretionary {-}{}{}S\discretionary {-}{}{}I\discretionary {-}{}{}Z\discretionary {-}{}{}E}{9}{subsubsection.4.1.2.4}
+\contentsline {subsubsection}{\numberline {4.1.2.5}T\discretionary {-}{}{}X\discretionary {-}{}{}\_\discretionary {-}{}{}\discretionary {-}{}{}B\discretionary {-}{}{}U\discretionary {-}{}{}F\discretionary {-}{}{}F\discretionary {-}{}{}E\discretionary {-}{}{}R\discretionary {-}{}{}\_\discretionary {-}{}{}\discretionary {-}{}{}S\discretionary {-}{}{}I\discretionary {-}{}{}Z\discretionary {-}{}{}E}{9}{subsubsection.4.1.2.5}
+\contentsline {subsubsection}{\numberline {4.1.2.6}X\discretionary {-}{}{}O\discretionary {-}{}{}F\discretionary {-}{}{}F}{9}{subsubsection.4.1.2.6}
+\contentsline {subsubsection}{\numberline {4.1.2.7}X\discretionary {-}{}{}O\discretionary {-}{}{}N}{9}{subsubsection.4.1.2.7}
+\contentsline {subsection}{\numberline {4.1.3}Function Documentation}{9}{subsection.4.1.3}
+\contentsline {subsubsection}{\numberline {4.1.3.1}serial\discretionary {-}{}{}Available}{9}{subsubsection.4.1.3.1}
+\contentsline {subsubsection}{\numberline {4.1.3.2}serial\discretionary {-}{}{}Close}{9}{subsubsection.4.1.3.2}
+\contentsline {subsubsection}{\numberline {4.1.3.3}serial\discretionary {-}{}{}Get}{10}{subsubsection.4.1.3.3}
+\contentsline {subsubsection}{\numberline {4.1.3.4}serial\discretionary {-}{}{}Get\discretionary {-}{}{}Blocking}{11}{subsubsection.4.1.3.4}
+\contentsline {subsubsection}{\numberline {4.1.3.5}serial\discretionary {-}{}{}Has\discretionary {-}{}{}Char}{11}{subsubsection.4.1.3.5}
+\contentsline {subsubsection}{\numberline {4.1.3.6}serial\discretionary {-}{}{}Init}{11}{subsubsection.4.1.3.6}
+\contentsline {subsubsection}{\numberline {4.1.3.7}serial\discretionary {-}{}{}Rx\discretionary {-}{}{}Buffer\discretionary {-}{}{}Empty}{12}{subsubsection.4.1.3.7}
+\contentsline {subsubsection}{\numberline {4.1.3.8}serial\discretionary {-}{}{}Rx\discretionary {-}{}{}Buffer\discretionary {-}{}{}Full}{12}{subsubsection.4.1.3.8}
+\contentsline {subsubsection}{\numberline {4.1.3.9}serial\discretionary {-}{}{}Tx\discretionary {-}{}{}Buffer\discretionary {-}{}{}Empty}{13}{subsubsection.4.1.3.9}
+\contentsline {subsubsection}{\numberline {4.1.3.10}serial\discretionary {-}{}{}Tx\discretionary {-}{}{}Buffer\discretionary {-}{}{}Full}{13}{subsubsection.4.1.3.10}
+\contentsline {subsubsection}{\numberline {4.1.3.11}serial\discretionary {-}{}{}Write}{14}{subsubsection.4.1.3.11}
+\contentsline {subsubsection}{\numberline {4.1.3.12}serial\discretionary {-}{}{}Write\discretionary {-}{}{}String}{14}{subsubsection.4.1.3.12}
+\contentsline {subsubsection}{\numberline {4.1.3.13}set\discretionary {-}{}{}Flow}{15}{subsubsection.4.1.3.13}
+\contentsline {chapter}{\numberline {5}File Documentation}{17}{chapter.5}
+\contentsline {section}{\numberline {5.1}serial.\discretionary {-}{}{}c File Reference}{17}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Detailed Description}{18}{subsection.5.1.1}
+\contentsline {section}{\numberline {5.2}serial.\discretionary {-}{}{}h File Reference}{18}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Detailed Description}{19}{subsection.5.2.1}
+\contentsline {section}{\numberline {5.3}serial\discretionary {-}{}{}\_\discretionary {-}{}{}device.\discretionary {-}{}{}h File Reference}{19}{section.5.3}
+\contentsline {subsection}{\numberline {5.3.1}Detailed Description}{19}{subsection.5.3.1}
+\contentsline {chapter}{\numberline {6}Example Documentation}{21}{chapter.6}
+\contentsline {section}{\numberline {6.1}test.\discretionary {-}{}{}c}{21}{section.6.1}
+\contentsline {part}{Index}{22}{section.6.1}

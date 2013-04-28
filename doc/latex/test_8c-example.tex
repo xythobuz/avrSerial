@@ -1,0 +1,69 @@
+\hypertarget{test_8c-example}{\section{test.\-c}
+}
+Initializes all available U\-A\-R\-T Modules.\-Then prints a welcome message on each and waits for incoming characters, which will be repeated on the U\-A\-R\-T module they were received on.
+
+
+\begin{DoxyCodeInclude}
+\textcolor{comment}{/*}
+\textcolor{comment}{ * test.c}
+\textcolor{comment}{ *}
+\textcolor{comment}{ * Copyright (c) 2012, Thomas Buck <xythobuz@me.com>}
+\textcolor{comment}{ * All rights reserved.}
+\textcolor{comment}{ *}
+\textcolor{comment}{ * Redistribution and use in source and binary forms, with or without}
+\textcolor{comment}{ * modification, are permitted provided that the following conditions}
+\textcolor{comment}{ * are met:}
+\textcolor{comment}{ *}
+\textcolor{comment}{ * - Redistributions of source code must retain the above copyright notice,}
+\textcolor{comment}{ *   this list of conditions and the following disclaimer.}
+\textcolor{comment}{ *}
+\textcolor{comment}{ * - Redistributions in binary form must reproduce the above copyright}
+\textcolor{comment}{ *   notice, this list of conditions and the following disclaimer in the}
+\textcolor{comment}{ *   documentation and/or other materials provided with the distribution.}
+\textcolor{comment}{ *}
+\textcolor{comment}{ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS}
+\textcolor{comment}{ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED}
+\textcolor{comment}{ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR}
+\textcolor{comment}{ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR}
+\textcolor{comment}{ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,}
+\textcolor{comment}{ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,}
+\textcolor{comment}{ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR}
+\textcolor{comment}{ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF}
+\textcolor{comment}{ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING}
+\textcolor{comment}{ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS}
+\textcolor{comment}{ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.}
+\textcolor{comment}{ */}
+\textcolor{preprocessor}{#include <avr/io.h>}
+\textcolor{preprocessor}{#include <avr/interrupt.h>}
+\textcolor{preprocessor}{#include <stdint.h>}
+
+\textcolor{preprocessor}{#include "\hyperlink{serial_8h}{serial.h}"}
+
+\textcolor{keywordtype}{int} main(\textcolor{keywordtype}{void}) \{
+    \textcolor{comment}{// Initialize UART modules}
+    \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < \hyperlink{group__uart_ga1ea963b291215ad9c5e8a0610f116b90}{serialAvailable}(); i++) \{
+        \hyperlink{group__uart_ga73d4335cb201753c580c87954f493886}{serialInit}(i, \hyperlink{group__uart_gafccfd7d1315f0763ac404c6104883341}{BAUD}(38400, F\_CPU));
+    \}
+
+    \textcolor{comment}{// Enable Interrupts}
+    sei();
+
+    \textcolor{comment}{// Print Welcome Message}
+    \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < \hyperlink{group__uart_ga1ea963b291215ad9c5e8a0610f116b90}{serialAvailable}(); i++) \{
+        \hyperlink{group__uart_ga054d68834f9ca19f3b2cf9d714337de4}{serialWriteString}(i, \textcolor{stringliteral}{"Hello from UART"});
+        \hyperlink{group__uart_ga388583adaa7db4fad121b6454668b347}{serialWrite}(i, i + \textcolor{charliteral}{'0'});
+        \hyperlink{group__uart_ga054d68834f9ca19f3b2cf9d714337de4}{serialWriteString}(i, \textcolor{stringliteral}{"... :)\(\backslash\)n"});
+    \}
+
+    \textcolor{comment}{// Wait for incoming bytes}
+    \textcolor{keywordflow}{for}(;;) \{
+        \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < \hyperlink{group__uart_ga1ea963b291215ad9c5e8a0610f116b90}{serialAvailable}(); i++) \{
+            \textcolor{keywordflow}{if} (\hyperlink{group__uart_ga266a54dcf3c4b85d92bf6b16bdcb5069}{serialHasChar}(i)) \{
+                \hyperlink{group__uart_ga388583adaa7db4fad121b6454668b347}{serialWrite}(i, \hyperlink{group__uart_gaa9d6e44600b215154c3f66193df151f6}{serialGet}(i));
+            \}
+        \}
+    \}
+    \textcolor{keywordflow}{return} 0;
+\}
+\end{DoxyCodeInclude}
+ 

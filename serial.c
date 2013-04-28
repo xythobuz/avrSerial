@@ -1,7 +1,7 @@
 /*
  * serial.c
  *
- * Copyright (c) 2012, Thomas Buck <xythobuz@me.com>
+ * Copyright (c) 2012, 2013, Thomas Buck <xythobuz@me.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,12 +32,38 @@
 #include <stdint.h>
 
 #include "serial.h"
+#include "serial_device.h"
 
-// Defining this enables incoming XON XOFF (sends XOFF if rx buff is full)
+/** \addtogroup uart UART Library
+ *  UART Library enabling you to control all available
+ *  UART Modules. With XON/XOFF Flow Control and buffered
+ *  Receiving and Transmitting.
+ *  @{
+ */
+
+/** \file serial.c
+ *  UART Library Implementation
+ */
+
+/** If you define this, a '\\r' (CR) will be put in front of a '\\n' (LF) when sending a byte.
+ *  Binary Communication will then be impossible!
+ */
+// #define SERIALINJECTCR
+
+#ifndef RX_BUFFER_SIZE
+#define RX_BUFFER_SIZE 32 /**< RX Buffer Size in Bytes (Power of 2) */
+#endif
+
+#ifndef TX_BUFFER_SIZE
+#define TX_BUFFER_SIZE 16 /**< TX Buffer Size in Bytes (Power of 2) */
+#endif
+
+/** Defining this enables incoming XON XOFF (sends XOFF if rx buff is full) */
 #define FLOWCONTROL
 
-#define XON 0x11
-#define XOFF 0x13
+#define FLOWMARK 5 /**< Space remaining to trigger xoff/xon */
+#define XON 0x11 /**< XON Value */
+#define XOFF 0x13 /**< XOFF Value */
 
 #if (RX_BUFFER_SIZE < 2) || (TX_BUFFER_SIZE < 2)
 #error SERIAL BUFFER TOO SMALL!
@@ -49,178 +75,172 @@
 #endif
 #endif
 
-#if (RX_BUFFER_SIZE + TX_BUFFER_SIZE) >= (RAMEND - 0x60)
+#if ((RX_BUFFER_SIZE + TX_BUFFER_SIZE) * UART_COUNT) >= (RAMEND - 0x60)
 #error SERIAL BUFFER TOO LARGE!
 #endif
 
-#define FLOWMARK 5
+// serialRegisters
+#define SERIALDATA  0
+#define SERIALB     1
+#define SERIALC     2
+#define SERIALA     3
+#define SERIALUBRRH 4
+#define SERIALUBRRL 5
 
-uint8_t volatile rxBuffer[RX_BUFFER_SIZE];
-uint8_t volatile txBuffer[TX_BUFFER_SIZE];
-uint16_t volatile rxRead = 0;
-uint16_t volatile rxWrite = 0;
-uint16_t volatile txRead = 0;
-uint16_t volatile txWrite = 0;
-uint8_t volatile shouldStartTransmission = 1;
+// serialBits
+#define SERIALUCSZ0 0
+#define SERIALUCSZ1 1
+#define SERIALRXCIE 2
+#define SERIALRXEN  3
+#define SERIALTXEN  4
+#define SERIALUDRIE 5
+#define SERIALUDRE  6
+
+uint8_t volatile rxBuffer[UART_COUNT][RX_BUFFER_SIZE];
+uint8_t volatile txBuffer[UART_COUNT][TX_BUFFER_SIZE];
+uint16_t volatile rxRead[UART_COUNT];
+uint16_t volatile rxWrite[UART_COUNT];
+uint16_t volatile txRead[UART_COUNT];
+uint16_t volatile txWrite[UART_COUNT];
+uint8_t volatile shouldStartTransmission[UART_COUNT];
 
 #ifdef FLOWCONTROL
-uint8_t volatile sendThisNext = 0;
-uint8_t volatile flow = 1;
-uint8_t volatile rxBufferElements = 0;
+uint8_t volatile sendThisNext[UART_COUNT];
+uint8_t volatile flow[UART_COUNT];
+uint8_t volatile rxBufferElements[UART_COUNT];
 #endif
 
-ISR(SERIALRECIEVEINTERRUPT) { // Receive complete
-    rxBuffer[rxWrite] = SERIALDATA;
-    if (rxWrite < (RX_BUFFER_SIZE - 1)) {
-        rxWrite++;
-    } else {
-        rxWrite = 0;
-    }
-
-#ifdef FLOWCONTROL
-    rxBufferElements++;
-    if ((flow == 1) && (rxBufferElements >= (RX_BUFFER_SIZE - FLOWMARK))) {
-        sendThisNext = XOFF;
-        flow = 0;
-        if (shouldStartTransmission) {
-            shouldStartTransmission = 0;
-            SERIALB |= (1 << SERIALUDRIE);
-            SERIALA |= (1 << SERIALUDRE); // Trigger Interrupt
-        }
-    }
-#endif
+uint8_t serialAvailable(void) {
+    return UART_COUNT;
 }
 
-ISR(SERIALTRANSMITINTERRUPT) { // Data register empty
-#ifdef FLOWCONTROL
-    if (sendThisNext) {
-        SERIALDATA = sendThisNext;
-        sendThisNext = 0;
-    } else {
-#endif
-        if (txRead != txWrite) {
-            SERIALDATA = txBuffer[txRead];
-            if (txRead < (TX_BUFFER_SIZE -1)) {
-                txRead++;
-            } else {
-                txRead = 0;
-            }
-        } else {
-            shouldStartTransmission = 1;
-            SERIALB &= ~(1 << SERIALUDRIE); // Disable Interrupt
-        }
-#ifdef FLOWCONTROL
-    }
-#endif
-}
+void serialInit(uint8_t uart, uint16_t baud) {
+    if (uart >= UART_COUNT)
+        return;
 
-void serialInit(uint16_t baud) {
-    // Default: 8N1
-    SERIALC = (1 << SERIALUCSZ0) | (1 << SERIALUCSZ1);
+    // Initialize state variables
+    rxRead[uart] = 0;
+    rxWrite[uart] = 0;
+    txRead[uart] = 0;
+    txWrite[uart] = 0;
+    shouldStartTransmission[uart] = 1;
+#ifdef FLOWCONTROL
+    sendThisNext[uart] = 0;
+    flow[uart] = 1;
+    rxBufferElements[uart] = 0;
+#endif
+
+    // Default Configuration: 8N1
+    *serialRegisters[uart][SERIALC] = (1 << serialBits[uart][SERIALUCSZ0]) | (1 << serialBits[uart][SERIALUCSZ1]);
 
     // Set baudrate
-#ifdef SERIALBAUD8
-    SERIALUBRRH = (baud >> 8);
-    SERIALUBRRL = baud;
+#if SERIALBAUDBIT == 8
+    *serialRegisters[uart][SERIALUBRRH] = (baud >> 8);
+    *serialRegisters[uart][SERIALUBRRL] = baud;
 #else
-    SERIALUBRR = baud;
+    *serialBaudRegisters[uart] = baud;
 #endif
 
-    SERIALB = (1 << SERIALRXCIE); // Enable Interrupts
-    SERIALB |= (1 << SERIALRXEN) | (1 << SERIALTXEN); // Enable Receiver/Transmitter
+    *serialRegisters[uart][SERIALB] = (1 << serialBits[uart][SERIALRXCIE]); // Enable Interrupts
+    *serialRegisters[uart][SERIALB] |= (1 << serialBits[uart][SERIALRXEN]) | (1 << serialBits[uart][SERIALTXEN]); // Enable Receiver/Transmitter
 }
 
-void serialClose(void) {
+void serialClose(uint8_t uart) {
+    if (uart >= UART_COUNT)
+        return;
+
     uint8_t sreg = SREG;
     sei();
-    while (!serialTxBufferEmpty());
-    while (SERIALB & (1 << SERIALUDRIE)); // Wait while Transmit Interrupt is on
+    while (!serialTxBufferEmpty(uart));
+    while (*serialRegisters[uart][SERIALB] & (1 << serialBits[uart][SERIALUDRIE])); // Wait while Transmit Interrupt is on
     cli();
-    SERIALB = 0;
-    SERIALC = 0;
-    rxRead = 0;
-    txRead = 0;
-    rxWrite = 0;
-    txWrite = 0;
-    shouldStartTransmission = 1;
-#ifdef FLOWCONTROL
-    flow = 1;
-    sendThisNext = 0;
-    rxBufferElements = 0;
-#endif
+    *serialRegisters[uart][SERIALB] = 0;
+    *serialRegisters[uart][SERIALC] = 0;
     SREG = sreg;
 }
 
-void setFlow(uint8_t on) {
 #ifdef FLOWCONTROL
-    if (flow != on) {
+void setFlow(uint8_t uart, uint8_t on) {
+    if (uart >= UART_COUNT)
+        return;
+
+    if (flow[uart] != on) {
         if (on == 1) {
             // Send XON
-            while (sendThisNext != 0);
-            sendThisNext = XON;
-            flow = 1;
-            if (shouldStartTransmission) {
-                shouldStartTransmission = 0;
-                SERIALB |= (1 << SERIALUDRIE);
-                SERIALA |= (1 << SERIALUDRE); // Trigger Interrupt
+            while (sendThisNext[uart] != 0);
+            sendThisNext[uart] = XON;
+            flow[uart] = 1;
+            if (shouldStartTransmission[uart]) {
+                shouldStartTransmission[uart] = 0;
+                *serialRegisters[uart][SERIALB] |= (1 << serialBits[uart][SERIALUDRIE]);
+                *serialRegisters[uart][SERIALA] |= (1 << serialBits[uart][SERIALUDRE]); // Trigger Interrupt
             }
         } else {
             // Send XOFF
-            sendThisNext = XOFF;
-            flow = 0;
-            if (shouldStartTransmission) {
-                shouldStartTransmission = 0;
-                SERIALB |= (1 << SERIALUDRIE);
-                SERIALA |= (1 << SERIALUDRE); // Trigger Interrupt
+            sendThisNext[uart] = XOFF;
+            flow[uart] = 0;
+            if (shouldStartTransmission[uart]) {
+                shouldStartTransmission[uart] = 0;
+                *serialRegisters[uart][SERIALB] |= (1 << serialBits[uart][SERIALUDRIE]);
+                *serialRegisters[uart][SERIALA] |= (1 << serialBits[uart][SERIALUDRE]); // Trigger Interrupt
             }
         }
         // Wait till it's transmitted
-        while (SERIALB & (1 << SERIALUDRIE));
+        while (*serialRegisters[uart][SERIALB] & (1 << serialBits[uart][SERIALUDRIE]));
     }
-#endif
 }
+#endif
 
 // ---------------------
 // |     Reception     |
 // ---------------------
 
-uint8_t serialHasChar(void) {
-    if (rxRead != rxWrite) { // True if char available
+uint8_t serialHasChar(uint8_t uart) {
+    if (uart >= UART_COUNT)
+        return 0;
+
+    if (rxRead[uart] != rxWrite[uart]) { // True if char available
         return 1;
     } else {
         return 0;
     }
 }
 
-uint8_t serialGetBlocking(void) {
-    while(!serialHasChar());
-    return serialGet();
+uint8_t serialGetBlocking(uint8_t uart) {
+    if (uart >= UART_COUNT)
+        return 0;
+
+    while(!serialHasChar(uart));
+    return serialGet(uart);
 }
 
-uint8_t serialGet(void) {
+uint8_t serialGet(uint8_t uart) {
+    if (uart >= UART_COUNT)
+        return 0;
+
     uint8_t c;
 
 #ifdef FLOWCONTROL
-    rxBufferElements--;
-    if ((flow == 0) && (rxBufferElements <= FLOWMARK)) {
-        while (sendThisNext != 0);
-        sendThisNext = XON;
-        flow = 1;
-        if (shouldStartTransmission) {
-            shouldStartTransmission = 0;
-            SERIALB |= (1 << SERIALUDRIE);
-            SERIALA |= (1 << SERIALUDRE); // Trigger Interrupt
+    rxBufferElements[uart]--;
+    if ((flow[uart] == 0) && (rxBufferElements[uart] <= FLOWMARK)) {
+        while (sendThisNext[uart] != 0);
+        sendThisNext[uart] = XON;
+        flow[uart] = 1;
+        if (shouldStartTransmission[uart]) {
+            shouldStartTransmission[uart] = 0;
+            *serialRegisters[uart][SERIALB] |= (1 << serialBits[uart][SERIALUDRIE]); // Enable Interrupt
+            *serialRegisters[uart][SERIALA] |= (1 << serialBits[uart][SERIALUDRE]); // Trigger Interrupt
         }
     }
 #endif
 
-    if (rxRead != rxWrite) {
-        c = rxBuffer[rxRead];
-        rxBuffer[rxRead] = 0;
-        if (rxRead < (RX_BUFFER_SIZE - 1)) {
-            rxRead++;
+    if (rxRead[uart] != rxWrite[uart]) {
+        c = rxBuffer[uart][rxRead[uart]];
+        rxBuffer[uart][rxRead[uart]] = 0;
+        if (rxRead[uart] < (RX_BUFFER_SIZE - 1)) {
+            rxRead[uart]++;
         } else {
-            rxRead = 0;
+            rxRead[uart] = 0;
         }
         return c;
     } else {
@@ -228,12 +248,18 @@ uint8_t serialGet(void) {
     }
 }
 
-uint8_t serialRxBufferFull(void) {
-    return (((rxWrite + 1) == rxRead) || ((rxRead == 0) && ((rxWrite + 1) == RX_BUFFER_SIZE)));
+uint8_t serialRxBufferFull(uint8_t uart) {
+    if (uart >= UART_COUNT)
+        return 0;
+
+    return (((rxWrite[uart] + 1) == rxRead[uart]) || ((rxRead[uart] == 0) && ((rxWrite[uart] + 1) == RX_BUFFER_SIZE)));
 }
 
-uint8_t serialRxBufferEmpty(void) {
-    if (rxRead != rxWrite) {
+uint8_t serialRxBufferEmpty(uint8_t uart) {
+    if (uart >= UART_COUNT)
+        return 0;
+
+    if (rxRead[uart] != rxWrite[uart]) {
         return 0;
     } else {
         return 1;
@@ -244,44 +270,141 @@ uint8_t serialRxBufferEmpty(void) {
 // |    Transmission    |
 // ----------------------
 
-void serialWrite(uint8_t data) {
+void serialWrite(uint8_t uart, uint8_t data) {
+    if (uart >= UART_COUNT)
+        return;
+
 #ifdef SERIALINJECTCR
     if (data == '\n') {
-        serialWrite('\r');
+        serialWrite(uart, '\r');
     }
 #endif
-    while (serialTxBufferFull());
+    while (serialTxBufferFull(uart));
 
-    uint8_t sreg = SREG;
-    cli();
-    txBuffer[txWrite] = data;
-    if (txWrite < (TX_BUFFER_SIZE - 1)) {
-        txWrite++;
+    txBuffer[uart][txWrite[uart]] = data;
+    if (txWrite[uart] < (TX_BUFFER_SIZE - 1)) {
+        txWrite[uart]++;
     } else {
-        txWrite = 0;
+        txWrite[uart] = 0;
     }
-    if (shouldStartTransmission) {
-        shouldStartTransmission = 0;
-        SERIALB |= (1 << SERIALUDRIE); // Enable Interrupt
-        SERIALA |= (1 << SERIALUDRE); // Trigger Interrupt
-    }
-    SREG = sreg;
-}
-
-void serialWriteString(const char *data) {
-    while (*data != '\0') {
-        serialWrite(*data++);
+    if (shouldStartTransmission[uart]) {
+        shouldStartTransmission[uart] = 0;
+        *serialRegisters[uart][SERIALB] |= (1 << serialBits[uart][SERIALUDRIE]); // Enable Interrupt
+        *serialRegisters[uart][SERIALA] |= (1 << serialBits[uart][SERIALUDRE]); // Trigger Interrupt
     }
 }
 
-uint8_t serialTxBufferFull(void) {
-    return (((txWrite + 1) == txRead) || ((txRead == 0) && ((txWrite + 1) == TX_BUFFER_SIZE)));
+void serialWriteString(uint8_t uart, const char *data) {
+    if (uart >= UART_COUNT)
+        return;
+
+    if (data == 0) {
+        serialWriteString(uart, "NULL");
+    } else {
+        while (*data != '\0') {
+            serialWrite(uart, *data++);
+        }
+    }
 }
 
-uint8_t serialTxBufferEmpty(void) {
-    if (txRead != txWrite) {
+uint8_t serialTxBufferFull(uint8_t uart) {
+    if (uart >= UART_COUNT)
+        return 0;
+
+    return (((txWrite[uart] + 1) == txRead[uart]) || ((txRead[uart] == 0) && ((txWrite[uart] + 1) == TX_BUFFER_SIZE)));
+}
+
+uint8_t serialTxBufferEmpty(uint8_t uart) {
+    if (uart >= UART_COUNT)
+        return 0;
+
+    if (txRead[uart] != txWrite[uart]) {
         return 0;
     } else {
         return 1;
     }
 }
+
+void serialReceiveInterrupt(uint8_t uart) {
+    rxBuffer[uart][rxWrite[uart]] = *serialRegisters[uart][SERIALDATA];
+    if (rxWrite[uart] < (RX_BUFFER_SIZE - 1)) {
+        rxWrite[uart]++;
+    } else {
+        rxWrite[uart] = 0;
+    }
+
+#ifdef FLOWCONTROL
+    rxBufferElements[uart]++;
+    if ((flow[uart] == 1) && (rxBufferElements[uart] >= (RX_BUFFER_SIZE - FLOWMARK))) {
+        sendThisNext[uart] = XOFF;
+        flow[uart] = 0;
+        if (shouldStartTransmission[uart]) {
+            shouldStartTransmission[uart] = 0;
+            *serialRegisters[uart][SERIALB] |= (1 << serialBits[uart][SERIALUDRIE]); // Enable Interrupt
+            *serialRegisters[uart][SERIALA] |= (1 << serialBits[uart][SERIALUDRE]); // Trigger Interrupt
+        }
+    }
+#endif
+}
+
+void serialTransmitInterrupt(uint8_t uart) {
+#ifdef FLOWCONTROL
+    if (sendThisNext[uart]) {
+        *serialRegisters[uart][SERIALDATA] = sendThisNext[uart];
+        sendThisNext[uart] = 0;
+    } else {
+#endif
+        if (txRead[uart] != txWrite[uart]) {
+            *serialRegisters[uart][SERIALDATA] = txBuffer[uart][txRead[uart]];
+            if (txRead[uart] < (TX_BUFFER_SIZE -1)) {
+                txRead[uart]++;
+            } else {
+                txRead[uart] = 0;
+            }
+        } else {
+            shouldStartTransmission[uart] = 1;
+            *serialRegisters[uart][SERIALB] &= ~(1 << serialBits[uart][SERIALUDRIE]); // Disable Interrupt
+        }
+#ifdef FLOWCONTROL
+    }
+#endif
+}
+
+ISR(SERIALRECIEVEINTERRUPT) { // Receive complete
+    serialReceiveInterrupt(0);
+}
+
+ISR(SERIALTRANSMITINTERRUPT) { // Data register empty
+    serialTransmitInterrupt(0);
+}
+
+#if UART_COUNT > 1
+ISR(SERIALRECIEVEINTERRUPT1) { // Receive complete
+    serialReceiveInterrupt(1);
+}
+
+ISR(SERIALTRANSMITINTERRUPT1) { // Data register empty
+    serialTransmitInterrupt(1);
+}
+#endif
+
+#if UART_COUNT > 2
+ISR(SERIALRECIEVEINTERRUPT2) { // Receive complete
+    serialReceiveInterrupt(2);
+}
+
+ISR(SERIALTRANSMITINTERRUPT2) { // Data register empty
+    serialTransmitInterrupt(2);
+}
+#endif
+
+#if UART_COUNT > 3
+ISR(SERIALRECIEVEINTERRUPT3) { // Receive complete
+    serialReceiveInterrupt(3);
+}
+
+ISR(SERIALTRANSMITINTERRUPT3) { // Data register empty
+    serialTransmitInterrupt(3);
+}
+#endif
+/** @} */

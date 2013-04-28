@@ -1,0 +1,64 @@
+\hypertarget{serial_8c}{\section{serial.\-c File Reference}
+\label{serial_8c}\index{serial.\-c@{serial.\-c}}
+}
+
+
+U\-A\-R\-T Library Implementation.  
+
+
+{\ttfamily \#include $<$avr/io.\-h$>$}\\*
+{\ttfamily \#include $<$avr/interrupt.\-h$>$}\\*
+{\ttfamily \#include $<$stdint.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}serial.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}serial\-\_\-device.\-h\char`\"{}}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{group__uart_ga739a2a1a0047c98ac1b18ecd25dac092}{R\-X\-\_\-\-B\-U\-F\-F\-E\-R\-\_\-\-S\-I\-Z\-E}~32
+\begin{DoxyCompactList}\small\item\em If you define this, a '\textbackslash{}r' (C\-R) will be put in front of a '\textbackslash{}n' (L\-F) when sending a byte. \end{DoxyCompactList}\item 
+\#define \hyperlink{group__uart_ga9ab33647617098646990fe263600b650}{T\-X\-\_\-\-B\-U\-F\-F\-E\-R\-\_\-\-S\-I\-Z\-E}~16
+\begin{DoxyCompactList}\small\item\em T\-X Buffer Size in Bytes (Power of 2) \end{DoxyCompactList}\item 
+\#define \hyperlink{group__uart_gaff1f07741fbe1f53f46098687f0a05e2}{F\-L\-O\-W\-C\-O\-N\-T\-R\-O\-L}
+\begin{DoxyCompactList}\small\item\em Defining this enables incoming X\-O\-N X\-O\-F\-F (sends X\-O\-F\-F if rx buff is full) \end{DoxyCompactList}\item 
+\#define \hyperlink{group__uart_gaa7907a070ef8e6d68d7d774b34eebe66}{F\-L\-O\-W\-M\-A\-R\-K}~5
+\begin{DoxyCompactList}\small\item\em Space remaining to trigger xoff/xon. \end{DoxyCompactList}\item 
+\#define \hyperlink{group__uart_gacdf721774c51e08c6609e6fa8cf82cc9}{X\-O\-N}~0x11
+\begin{DoxyCompactList}\small\item\em X\-O\-N Value. \end{DoxyCompactList}\item 
+\#define \hyperlink{group__uart_ga67fd78ae15d2b67c10d44d69a49ab1c5}{X\-O\-F\-F}~0x13
+\begin{DoxyCompactList}\small\item\em X\-O\-F\-F Value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+uint8\-\_\-t \hyperlink{group__uart_ga1ea963b291215ad9c5e8a0610f116b90}{serial\-Available} (void)
+\begin{DoxyCompactList}\small\item\em Get number of available U\-A\-R\-T modules. \end{DoxyCompactList}\item 
+void \hyperlink{group__uart_ga73d4335cb201753c580c87954f493886}{serial\-Init} (uint8\-\_\-t uart, uint16\-\_\-t baud)
+\begin{DoxyCompactList}\small\item\em Initialize the U\-A\-R\-T Hardware. \end{DoxyCompactList}\item 
+void \hyperlink{group__uart_gaa16a5ecaf9e40660ded50737ff1d0a88}{serial\-Close} (uint8\-\_\-t uart)
+\begin{DoxyCompactList}\small\item\em Stop the U\-A\-R\-T Hardware. \end{DoxyCompactList}\item 
+void \hyperlink{group__uart_ga5d5de9e3ed5a0be11f707113cfff33f5}{set\-Flow} (uint8\-\_\-t uart, uint8\-\_\-t on)
+\begin{DoxyCompactList}\small\item\em Manually change the flow control. \end{DoxyCompactList}\item 
+uint8\-\_\-t \hyperlink{group__uart_ga266a54dcf3c4b85d92bf6b16bdcb5069}{serial\-Has\-Char} (uint8\-\_\-t uart)
+\begin{DoxyCompactList}\small\item\em Check if a byte was received. \end{DoxyCompactList}\item 
+uint8\-\_\-t \hyperlink{group__uart_gaf7c4238a9a5e8fff64af1faf1689a5a4}{serial\-Get\-Blocking} (uint8\-\_\-t uart)
+\begin{DoxyCompactList}\small\item\em Wait until a character is received. \end{DoxyCompactList}\item 
+uint8\-\_\-t \hyperlink{group__uart_gaa9d6e44600b215154c3f66193df151f6}{serial\-Get} (uint8\-\_\-t uart)
+\begin{DoxyCompactList}\small\item\em Read a single byte. \end{DoxyCompactList}\item 
+uint8\-\_\-t \hyperlink{group__uart_ga73d16b244172336e7306ea2e4cf90fa1}{serial\-Rx\-Buffer\-Full} (uint8\-\_\-t uart)
+\begin{DoxyCompactList}\small\item\em Check if the receive buffer is full. \end{DoxyCompactList}\item 
+uint8\-\_\-t \hyperlink{group__uart_ga742268372398b85935564fded999b198}{serial\-Rx\-Buffer\-Empty} (uint8\-\_\-t uart)
+\begin{DoxyCompactList}\small\item\em Check if the receive buffer is empty. \end{DoxyCompactList}\item 
+void \hyperlink{group__uart_ga388583adaa7db4fad121b6454668b347}{serial\-Write} (uint8\-\_\-t uart, uint8\-\_\-t data)
+\begin{DoxyCompactList}\small\item\em Send a byte. \end{DoxyCompactList}\item 
+void \hyperlink{group__uart_ga054d68834f9ca19f3b2cf9d714337de4}{serial\-Write\-String} (uint8\-\_\-t uart, const char $\ast$data)
+\begin{DoxyCompactList}\small\item\em Send a string. \end{DoxyCompactList}\item 
+uint8\-\_\-t \hyperlink{group__uart_ga8a6adfd3c350ceb55605d003a62a36a4}{serial\-Tx\-Buffer\-Full} (uint8\-\_\-t uart)
+\begin{DoxyCompactList}\small\item\em Check if the transmit buffer is full. \end{DoxyCompactList}\item 
+uint8\-\_\-t \hyperlink{group__uart_ga14c345ea0707111e988a80ef1da65e32}{serial\-Tx\-Buffer\-Empty} (uint8\-\_\-t uart)
+\begin{DoxyCompactList}\small\item\em Check if the transmit buffer is empty. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+U\-A\-R\-T Library Implementation. 
+
+Definition in file \hyperlink{serial_8c_source}{serial.\-c}.
+

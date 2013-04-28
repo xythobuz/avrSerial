@@ -1,0 +1,122 @@
+\begin{theindex}
+
+  \item {B\discretionary {-}{}{}A\discretionary {-}{}{}U\discretionary {-}{}{}D}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{8}
+
+  \indexspace
+
+  \item {F\discretionary {-}{}{}L\discretionary {-}{}{}O\discretionary {-}{}{}W\discretionary {-}{}{}C\discretionary {-}{}{}O\discretionary {-}{}{}N\discretionary {-}{}{}T\discretionary {-}{}{}R\discretionary {-}{}{}O\discretionary {-}{}{}L}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{8}
+  \item {F\discretionary {-}{}{}L\discretionary {-}{}{}O\discretionary {-}{}{}W\discretionary {-}{}{}M\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}K}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{8}
+
+  \indexspace
+
+  \item {R\discretionary {-}{}{}X\discretionary {-}{}{}\_\discretionary {-}{}{}\discretionary {-}{}{}B\discretionary {-}{}{}U\discretionary {-}{}{}F\discretionary {-}{}{}F\discretionary {-}{}{}E\discretionary {-}{}{}R\discretionary {-}{}{}\_\discretionary {-}{}{}\discretionary {-}{}{}S\discretionary {-}{}{}I\discretionary {-}{}{}Z\discretionary {-}{}{}E}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{8}
+
+  \indexspace
+
+  \item {serial.\discretionary {-}{}{}c}, \hyperpage{17}
+  \item {serial.\discretionary {-}{}{}h}, \hyperpage{18}
+  \item {serial\discretionary {-}{}{}\_\discretionary {-}{}{}device.\discretionary {-}{}{}h}, 
+		\hyperpage{19}
+  \item {serial\discretionary {-}{}{}Available}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{9}
+  \item {serial\discretionary {-}{}{}Close}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{9}
+  \item {serial\discretionary {-}{}{}Get}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{10}
+  \item {serial\discretionary {-}{}{}Get\discretionary {-}{}{}Blocking}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{10}
+  \item {serial\discretionary {-}{}{}Has\discretionary {-}{}{}Char}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{11}
+  \item {serial\discretionary {-}{}{}Init}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{11}
+  \item {serial\discretionary {-}{}{}Rx\discretionary {-}{}{}Buffer\discretionary {-}{}{}Empty}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{12}
+  \item {serial\discretionary {-}{}{}Rx\discretionary {-}{}{}Buffer\discretionary {-}{}{}Full}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{12}
+  \item {serial\discretionary {-}{}{}Tx\discretionary {-}{}{}Buffer\discretionary {-}{}{}Empty}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{13}
+  \item {serial\discretionary {-}{}{}Tx\discretionary {-}{}{}Buffer\discretionary {-}{}{}Full}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{13}
+  \item {serial\discretionary {-}{}{}Write}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{14}
+  \item {serial\discretionary {-}{}{}Write\discretionary {-}{}{}String}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{14}
+  \item {set\discretionary {-}{}{}Flow}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{15}
+
+  \indexspace
+
+  \item {T\discretionary {-}{}{}X\discretionary {-}{}{}\_\discretionary {-}{}{}\discretionary {-}{}{}B\discretionary {-}{}{}U\discretionary {-}{}{}F\discretionary {-}{}{}F\discretionary {-}{}{}E\discretionary {-}{}{}R\discretionary {-}{}{}\_\discretionary {-}{}{}\discretionary {-}{}{}S\discretionary {-}{}{}I\discretionary {-}{}{}Z\discretionary {-}{}{}E}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{9}
+
+  \indexspace
+
+  \item {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{7}
+    \subitem {B\discretionary {-}{}{}A\discretionary {-}{}{}U\discretionary {-}{}{}D}, 
+		\hyperpage{8}
+    \subitem {F\discretionary {-}{}{}L\discretionary {-}{}{}O\discretionary {-}{}{}W\discretionary {-}{}{}C\discretionary {-}{}{}O\discretionary {-}{}{}N\discretionary {-}{}{}T\discretionary {-}{}{}R\discretionary {-}{}{}O\discretionary {-}{}{}L}, 
+		\hyperpage{8}
+    \subitem {F\discretionary {-}{}{}L\discretionary {-}{}{}O\discretionary {-}{}{}W\discretionary {-}{}{}M\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}K}, 
+		\hyperpage{8}
+    \subitem {R\discretionary {-}{}{}X\discretionary {-}{}{}\_\discretionary {-}{}{}\discretionary {-}{}{}B\discretionary {-}{}{}U\discretionary {-}{}{}F\discretionary {-}{}{}F\discretionary {-}{}{}E\discretionary {-}{}{}R\discretionary {-}{}{}\_\discretionary {-}{}{}\discretionary {-}{}{}S\discretionary {-}{}{}I\discretionary {-}{}{}Z\discretionary {-}{}{}E}, 
+		\hyperpage{8}
+    \subitem {serial\discretionary {-}{}{}Available}, \hyperpage{9}
+    \subitem {serial\discretionary {-}{}{}Close}, \hyperpage{9}
+    \subitem {serial\discretionary {-}{}{}Get}, \hyperpage{10}
+    \subitem {serial\discretionary {-}{}{}Get\discretionary {-}{}{}Blocking}, 
+		\hyperpage{10}
+    \subitem {serial\discretionary {-}{}{}Has\discretionary {-}{}{}Char}, 
+		\hyperpage{11}
+    \subitem {serial\discretionary {-}{}{}Init}, \hyperpage{11}
+    \subitem {serial\discretionary {-}{}{}Rx\discretionary {-}{}{}Buffer\discretionary {-}{}{}Empty}, 
+		\hyperpage{12}
+    \subitem {serial\discretionary {-}{}{}Rx\discretionary {-}{}{}Buffer\discretionary {-}{}{}Full}, 
+		\hyperpage{12}
+    \subitem {serial\discretionary {-}{}{}Tx\discretionary {-}{}{}Buffer\discretionary {-}{}{}Empty}, 
+		\hyperpage{13}
+    \subitem {serial\discretionary {-}{}{}Tx\discretionary {-}{}{}Buffer\discretionary {-}{}{}Full}, 
+		\hyperpage{13}
+    \subitem {serial\discretionary {-}{}{}Write}, \hyperpage{14}
+    \subitem {serial\discretionary {-}{}{}Write\discretionary {-}{}{}String}, 
+		\hyperpage{14}
+    \subitem {set\discretionary {-}{}{}Flow}, \hyperpage{15}
+    \subitem {T\discretionary {-}{}{}X\discretionary {-}{}{}\_\discretionary {-}{}{}\discretionary {-}{}{}B\discretionary {-}{}{}U\discretionary {-}{}{}F\discretionary {-}{}{}F\discretionary {-}{}{}E\discretionary {-}{}{}R\discretionary {-}{}{}\_\discretionary {-}{}{}\discretionary {-}{}{}S\discretionary {-}{}{}I\discretionary {-}{}{}Z\discretionary {-}{}{}E}, 
+		\hyperpage{9}
+    \subitem {X\discretionary {-}{}{}O\discretionary {-}{}{}F\discretionary {-}{}{}F}, 
+		\hyperpage{9}
+    \subitem {X\discretionary {-}{}{}O\discretionary {-}{}{}N}, 
+		\hyperpage{9}
+
+  \indexspace
+
+  \item {X\discretionary {-}{}{}O\discretionary {-}{}{}F\discretionary {-}{}{}F}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{9}
+  \item {X\discretionary {-}{}{}O\discretionary {-}{}{}N}
+    \subitem {U\discretionary {-}{}{}A\discretionary {-}{}{}R\discretionary {-}{}{}T Library}, 
+		\hyperpage{9}
+
+\end{theindex}

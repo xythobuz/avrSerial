@@ -24,36 +24,52 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-MCU = atmega32
+MCU = atmega2560
 F_CPU = 16000000
 RM = rm -rf
 OPT = s
 CSTANDARD = gnu99
 
-SRC = serial.c
-OBJ = $(SRC:.c=.o)
+ISPPORT = usb
+ISPTYPE = avrisp2
+
+DOXYGEN = /Applications/Doxygen.app/Contents/Resources/doxygen
+
+# -----------------------------
 
 CARGS = -mmcu=$(MCU)
-CARGS += -I$(EXTRAINCDIR)
 CARGS += -O$(OPT)
 CARGS += -funsigned-char
 CARGS += -funsigned-bitfields
 CARGS += -fpack-struct
 CARGS += -fshort-enums
 CARGS += -Wall -Wstrict-prototypes
-CARGS += -Iinclude
 CARGS += -std=$(CSTANDARD)
 CARGS += -DF_CPU=$(F_CPU)
 
-all: lib
+all: test.hex
+
+doc: serial.c serial.h serial_device.h test.c
+	$(DOXYGEN) Doxyfile
+	make -C doc/latex/
+
+program: test.hex
+	avrdude -p $(MCU) -c $(ISPTYPE) -P $(ISPPORT) -e -U test.hex
+
+test.hex: test.elf
+	avr-objcopy -O ihex $< $@
+
+test.elf: libavrSerial.a test.o
+	avr-gcc $(CARGS) test.o --output test.elf -Wl,-L.,-lm,-lavrSerial,--relax
+	avr-size --mcu=$(MCU) -C test.elf
 
 lib: libavrSerial.a sizelibafter
 
 sizelibafter:
 	avr-size --mcu=$(MCU) -C libavrSerial.a
 
-libavrSerial.a: $(OBJ)
-	avr-ar -c -r -s libavrSerial.a $(OBJ)
+libavrSerial.a: serial.o
+	avr-ar -c -r -s libavrSerial.a serial.o
 
 %.o: %.c
 	avr-gcc -c $< -o $@ $(CARGS)
@@ -61,3 +77,5 @@ libavrSerial.a: $(OBJ)
 clean:
 	$(RM) *.o
 	$(RM) *.a
+	$(RM) *.elf
+	$(RM) *.hex

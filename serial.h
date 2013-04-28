@@ -1,7 +1,7 @@
 /*
  * serial.h
  *
- * Copyright (c) 2012, Thomas Buck <xythobuz@me.com>
+ * Copyright (c) 2012, 2013, Thomas Buck <xythobuz@me.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,108 +30,96 @@
 #ifndef _serial_h
 #define _serial_h
 
-/* You always write Strings with '\n' (LF) as line ending.
- * If you define this, a '\r' (CR) will be put in front of the LF
+/** \addtogroup uart UART Library
+ *  UART Library enabling you to control all available
+ *  UART Modules. With XON/XOFF Flow Control and buffered
+ *  Receiving and Transmitting.
+ *  @{
  */
-// #define SERIALINJECTCR
 
-// RX & TX buffer size in bytes
-#ifndef RX_BUFFER_SIZE
-#define RX_BUFFER_SIZE 32
-#endif
+/** \file serial.h
+ *  UART Library Header File
+ */
 
-#ifndef TX_BUFFER_SIZE
-#define TX_BUFFER_SIZE 16
-#endif
-
+/** Calculate Baudrate Register Value */
 #define BAUD(baudRate,xtalCpu) ((xtalCpu)/((baudRate)*16l)-1)
 
-void serialInit(uint16_t baud);
-void serialClose(void);
+/** Get number of available UART modules.
+ *  \returns number of modules
+ */
+uint8_t serialAvailable(void);
 
-void setFlow(uint8_t on);
+/** Initialize the UART Hardware.
+ *  \param uart UART Module to initialize
+ *  \param baud Baudrate. Use the BAUD() macro!
+ */
+void serialInit(uint8_t uart, uint16_t baud);
 
-// Reception
-uint8_t serialHasChar(void);
-uint8_t serialGet(void); // Get a character
-uint8_t serialGetBlocking(void);
-uint8_t serialRxBufferFull(void); // 1 if full
-uint8_t serialRxBufferEmpty(void); // 1 if empty
+/** Stop the UART Hardware.
+ *  \param uart UART Module to stop
+ */
+void serialClose(uint8_t uart);
 
-// Transmission
-void serialWrite(uint8_t data);
-void serialWriteString(const char *data);
-uint8_t serialTxBufferFull(void); // 1 if full
-uint8_t serialTxBufferEmpty(void); // 1 if empty
+/** Manually change the flow control.
+ *  Flow Control has to be compiled into the library!
+ *  \param uart UART Module to operate on
+ *  \param on 1 of on, 0 if off
+ */
+void setFlow(uint8_t uart, uint8_t on);
 
-#if  defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__) \
-    || defined(__AVR_ATmega8515__) || defined(__AVR_ATmega8535__) \
-|| defined(__AVR_ATmega323__)
-#define SERIALRECIEVEINTERRUPT USART_RXC_vect
-#define SERIALTRANSMITINTERRUPT USART_UDRE_vect
-#define SERIALDATA UDR
-#define SERIALB UCSRB
-#define SERIALIE UDRIE
-#define SERIALC UCSRC
-#define SERIALUPM1 UPM1
-#define SERIALUPM0 UPM0
-#define SERIALUSBS USBS
-#define SERIALUCSZ0 UCSZ0
-#define SERIALUCSZ1 UCSZ1
-#define SERIALUCSZ2 UCSZ2
-#define SERIALRXCIE RXCIE
-#define SERIALRXEN RXEN
-#define SERIALTXEN TXEN
-#define SERIALA UCSRA
-#define SERIALUDRIE UDRIE
-#define SERIALUDRE UDRE
-#define SERIALBAUD8
-#define SERIALUBRRH UBRRH
-#define SERIALUBRRL UBRRL
-#elif defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) || defined(__AVR_ATmega1280__) \
-    || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega640__)
-// These definitions reflect the registers for the first UART. Change the 0s to 1s and you will use the second one.serial.c
-#define SERIALRECIEVEINTERRUPT USART0_RXC_vect
-#define SERIALTRANSMITINTERRUPT USART0_UDRE_vect
-#define SERIALDATA UDR0
-#define SERIALB UCSR0B
-#define SERIALIE UDRIE0
-#define SERIALC UCSR0C
-#define SERIALUPM1 UPM01
-#define SERIALUPM0 UPM00
-#define SERIALUSBS USBS0
-#define SERIALUCSZ0 UCSZ00
-#define SERIALUCSZ1 UCSZ01
-#define SERIALUCSZ2 UCSZ02
-#define SERIALRXCIE RXCIE0
-#define SERIALRXEN RXEN0
-#define SERIALTXEN TXEN0
-#define SERIALA UCSR0A
-#define SERIALUDRIE UDRIE0
-#define SERIALUDRE UDRE0
-#define SERIALUBRR UBRR0
-#elif defined(__AVR_ATmega168__)
-#define SERIALRECIEVEINTERRUPT USART_RX_vect
-#define SERIALTRANSMITINTERRUPT USART_UDRE_vect
-#define SERIALDATA UDR0
-#define SERIALB UCSR0B
-#define SERIALIE UDRIE0
-#define SERIALC UCSR0C
-#define SERIALUPM1 UPM01
-#define SERIALUPM0 UPM00
-#define SERIALUSBS USBS0
-#define SERIALUCSZ0 UCSZ00
-#define SERIALUCSZ1 UCSZ01
-#define SERIALUCSZ2 UCSZ02
-#define SERIALRXCIE RXCIE0
-#define SERIALRXEN RXEN0
-#define SERIALTXEN TXEN0
-#define SERIALA UCSR0A
-#define SERIALUDRIE UDRIE0
-#define SERIALUDRE UDRE0
-#define SERIALUBRR UBRR0
-#else
-#error "AvrSerialLibrary not compatible with your MCU!"
-#endif
+/** Check if a byte was received.
+ *  \param uart UART Module to check
+ *  \returns 1 if a byte was received, 0 if not
+ */
+uint8_t serialHasChar(uint8_t uart);
+
+/** Read a single byte.
+ *  \param uart UART Module to read from
+ *  \returns Received byte or 0
+ */
+uint8_t serialGet(uint8_t uart);
+
+/** Wait until a character is received.
+ *  \param uart UART Module to read from
+ *  \returns Received byte
+ */
+uint8_t serialGetBlocking(uint8_t uart);
+
+/** Check if the receive buffer is full.
+ *  \param uart UART Module to check
+ *  \returns 1 if buffer is full, 0 if not
+ */
+uint8_t serialRxBufferFull(uint8_t uart);
+
+/** Check if the receive buffer is empty.
+ *  \param uart UART Module to check
+ *  \returns 1 if buffer is empty, 0 if not.
+ */
+uint8_t serialRxBufferEmpty(uint8_t uart);
+
+/** Send a byte.
+ *  \param uart UART Module to write to
+ *  \param data Byte to send
+ */
+void serialWrite(uint8_t uart, uint8_t data);
+
+/** Send a string.
+ *  \param uart UART Module to write to
+ *  \param data Null-Terminated String
+ */
+void serialWriteString(uint8_t uart, const char *data);
+
+/** Check if the transmit buffer is full.
+ *  \param uart UART Module to check
+ *  \returns 1 if buffer is full, 0 if not
+ */
+uint8_t serialTxBufferFull(uint8_t uart);
+
+/** Check if the transmit buffer is empty.
+ *  \param uart UART Module to check
+ *  \returns 1 if buffer is empty, 0 if not.
+ */
+uint8_t serialTxBufferEmpty(uint8_t uart);
 
 #endif // _serial_h
+/** @} */
