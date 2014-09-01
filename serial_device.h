@@ -97,8 +97,57 @@ uint8_t serialBits[UART_COUNT][UART_BITS] = {{
 #define SERIALRECIEVEINTERRUPT USART_RX_vect
 #define SERIALTRANSMITINTERRUPT USART_UDRE_vect
 
-#elif defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__) || defined(__AVR_ATmega1280__) \
-    || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega640__)
+#elif defined(__AVR_ATmega2561__) || defined(__AVR_ATmega1281__)
+
+#define UART_COUNT 2
+#define UART_REGISTERS 2
+#define UART_BITS 7
+volatile uint8_t *serialRegisters[UART_COUNT][UART_REGISTERS] = {
+    {
+        &UDR0,
+        &UCSR0B,
+        &UCSR0C,
+        &UCSR0A
+    },
+    {
+        &UDR1,
+        &UCSR1B,
+        &UCSR1C,
+        &UCSR1A
+    }
+};
+#define SERIALBAUDBIT 16
+volatile uint16_t *serialBaudRegisters[UART_COUNT] = {
+    &UBRR0, &UBRR1
+};
+uint8_t serialBits[UART_COUNT][UART_BITS] = {
+    {
+        UCSZ00,
+        UCSZ01,
+        RXCIE0,
+        RXEN0,
+        TXEN0,
+        UDRIE0,
+        UDRE0
+    },
+    {
+        UCSZ10,
+        UCSZ11,
+        RXCIE1,
+        RXEN1,
+        TXEN1,
+        UDRIE1,
+        UDRE1
+    }
+};
+#define SERIALRECIEVEINTERRUPT   USART0_RX_vect
+#define SERIALTRANSMITINTERRUPT  USART0_UDRE_vect
+#define SERIALRECIEVEINTERRUPT1  USART1_RX_vect
+#define SERIALTRANSMITINTERRUPT1 USART1_UDRE_vect
+
+
+#elif defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1280__) \
+    || defined(__AVR_ATmega640__)
 
 #define UART_COUNT 4
 #define UART_REGISTERS 4
