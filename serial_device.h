@@ -97,10 +97,10 @@ uint8_t serialBits[UART_COUNT][UART_BITS] = {{
 #define SERIALRECIEVEINTERRUPT USART_RX_vect
 #define SERIALTRANSMITINTERRUPT USART_UDRE_vect
 
-#elif defined(__AVR_ATmega2561__) || defined(__AVR_ATmega1281__)
+#elif defined(__AVR_ATmega2561__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega1284P__)
 
 #define UART_COUNT 2
-#define UART_REGISTERS 2
+#define UART_REGISTERS 4
 #define UART_BITS 7
 volatile uint8_t *serialRegisters[UART_COUNT][UART_REGISTERS] = {
     {
