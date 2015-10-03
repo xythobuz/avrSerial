@@ -69,9 +69,11 @@ uint8_t serialBits[UART_COUNT][UART_BITS] = {{
 }};
 #define SERIALRECIEVEINTERRUPT USART_RXC_vect
 #define SERIALTRANSMITINTERRUPT USART_UDRE_vect
-
+ 
 #elif defined(__AVR_ATmega168__) || defined(__AVR_ATmega328__) \
-    || defined(__AVR_ATmega48__) || defined(__AVR_ATmega88__)
+    || defined(__AVR_ATmega48__) || defined(__AVR_ATmega88__) \
+    defined(__AVR_ATmega168P__) || defined(__AVR_ATmega328P__) \
+    || defined(__AVR_ATmega48P__) || defined(__AVR_ATmega88P__) 
 
 #define UART_COUNT 1
 #define UART_REGISTERS 5
