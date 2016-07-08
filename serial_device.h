@@ -42,9 +42,9 @@
  *  Contains Register and Bit Positions for different AVR devices.
  */
 
-#if  defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__) \
-    || defined(__AVR_ATmega8515__) || defined(__AVR_ATmega8535__) \
-|| defined(__AVR_ATmega323__)
+#if  defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) \
+    || defined(__AVR_ATmega32__) || defined(__AVR_ATmega8515__) \
+    || defined(__AVR_ATmega8535__) || defined(__AVR_ATmega323__)
 
 #define UART_COUNT 1
 #define UART_REGISTERS 6
@@ -69,11 +69,11 @@ uint8_t serialBits[UART_COUNT][UART_BITS] = {{
 }};
 #define SERIALRECIEVEINTERRUPT USART_RXC_vect
 #define SERIALTRANSMITINTERRUPT USART_UDRE_vect
- 
+
 #elif defined(__AVR_ATmega168__) || defined(__AVR_ATmega328__) \
     || defined(__AVR_ATmega48__) || defined(__AVR_ATmega88__) \
     || defined(__AVR_ATmega168P__) || defined(__AVR_ATmega328P__) \
-    || defined(__AVR_ATmega48P__) || defined(__AVR_ATmega88P__) 
+    || defined(__AVR_ATmega48P__) || defined(__AVR_ATmega88P__)
 
 #define UART_COUNT 1
 #define UART_REGISTERS 5
@@ -100,7 +100,8 @@ uint8_t serialBits[UART_COUNT][UART_BITS] = {{
 #define SERIALRECIEVEINTERRUPT USART_RX_vect
 #define SERIALTRANSMITINTERRUPT USART_UDRE_vect
 
-#elif defined(__AVR_ATmega2561__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega1284P__)
+#elif defined(__AVR_ATmega2561__) || defined(__AVR_ATmega1281__) \
+    || defined(__AVR_ATmega1284P__)
 
 #define UART_COUNT 2
 #define UART_REGISTERS 4
@@ -238,3 +239,4 @@ uint8_t serialBits[UART_COUNT][UART_BITS] = {
 
 #endif // _serial_device_h
 /** @} */
+

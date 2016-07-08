@@ -42,7 +42,7 @@
  */
 
 /** Calculate Baudrate Register Value */
-#define BAUD(baudRate,xtalCpu) ((xtalCpu)/((baudRate)*16l)-1)
+#define BAUD(baudRate,xtalCpu) ((xtalCpu) / ((baudRate) * 16l) - 1)
 
 /** Get number of available UART modules.
  *  \returns number of modules
@@ -123,3 +123,4 @@ uint8_t serialTxBufferEmpty(uint8_t uart);
 
 #endif // _serial_h
 /** @} */
+
