@@ -375,7 +375,7 @@ uint8_t serialTxBufferEmpty(uint8_t uart) {
 // |      Internal      |
 // ----------------------
 
-static void serialReceiveInterrupt(uint8_t uart) {
+inline static void serialReceiveInterrupt(uint8_t uart) {
     rxBuffer[uart][rxWrite[uart]] = *serialRegisters[uart][SERIALDATA];
 
     // Simply skip increasing the write pointer if the receive buffer is overflowing
@@ -408,7 +408,7 @@ static void serialReceiveInterrupt(uint8_t uart) {
 #endif
 }
 
-static void serialTransmitInterrupt(uint8_t uart) {
+inline static void serialTransmitInterrupt(uint8_t uart) {
 #ifdef FLOWCONTROL
     if (sendThisNext[uart]) {
         *serialRegisters[uart][SERIALDATA] = sendThisNext[uart];

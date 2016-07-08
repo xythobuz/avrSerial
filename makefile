@@ -43,9 +43,11 @@ CARGS += -funsigned-char
 CARGS += -funsigned-bitfields
 CARGS += -fpack-struct
 CARGS += -fshort-enums
+CARGS += -ffunction-sections
 CARGS += -Wall -Wstrict-prototypes
 CARGS += -std=$(CSTANDARD)
 CARGS += -DF_CPU=$(F_CPU)
+LDARGS = -Wl,-L.,-lm,-lavrSerial,--relax,--gc-sections
 
 all: test.hex
 
@@ -60,7 +62,7 @@ test.hex: test.elf
 	avr-objcopy -O ihex $< $@
 
 test.elf: libavrSerial.a test.o
-	avr-gcc $(CARGS) test.o --output test.elf -Wl,-L.,-lm,-lavrSerial,--relax
+	avr-gcc $(CARGS) test.o --output test.elf $(LDARGS)
 	avr-size test.elf
 
 lib: libavrSerial.a sizelibafter
@@ -70,6 +72,8 @@ sizelibafter:
 
 libavrSerial.a: serial.o
 	avr-ar -c -r -s libavrSerial.a serial.o
+
+serial.o: serial.h serial_device.h
 
 %.o: %.c
 	avr-gcc -c $< -o $@ $(CARGS)

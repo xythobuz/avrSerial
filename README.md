@@ -21,7 +21,7 @@ For normal use, either include serial.c, serial.h and serial_device.h in your pr
 
 and linking this to your project, as well as including serial.h.
 
-The current Doxygen Documentation can be found in doc/ and [on the web](http://www.xythobuz.org/avrserial/) or as [PDF](http://www.xythobuz.org/avrserial.pdf)...
+The more-or-less current Doxygen Documentation can be found [on the web](http://www.xythobuz.de/avrserial/) or as [PDF](http://www.xythobuz.de/avrserial.pdf)...
 
 ## License
 
