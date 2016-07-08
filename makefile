@@ -61,12 +61,12 @@ test.hex: test.elf
 
 test.elf: libavrSerial.a test.o
 	avr-gcc $(CARGS) test.o --output test.elf -Wl,-L.,-lm,-lavrSerial,--relax
-	avr-size --mcu=$(MCU) -C test.elf
+	avr-size test.elf
 
 lib: libavrSerial.a sizelibafter
 
 sizelibafter:
-	avr-size --mcu=$(MCU) -C libavrSerial.a
+	avr-size libavrSerial.a
 
 libavrSerial.a: serial.o
 	avr-ar -c -r -s libavrSerial.a serial.o
@@ -79,3 +79,4 @@ clean:
 	$(RM) *.a
 	$(RM) *.elf
 	$(RM) *.hex
+
