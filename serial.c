@@ -471,8 +471,6 @@ uint8_t serialTxBufferEmpty(uint8_t uart) {
 // ----------------------
 
 static void serialReceiveInterrupt(uint8_t uart) {
-    PORTE.OUTCLR = PIN7_bm;
-
 #ifndef UART_XMEGA
     rxBuffer[uart][rxWrite[uart]] = *serialRegisters[uart][SERIALDATA];
 #else // UART_XMEGA
@@ -515,13 +513,9 @@ static void serialReceiveInterrupt(uint8_t uart) {
         }
     }
 #endif // FLOWCONTROL
-
-    PORTE.OUTSET = PIN7_bm;
 }
 
 static void serialTransmitInterrupt(uint8_t uart) {
-    PORTE.OUTCLR = PIN6_bm;
-
 #ifdef FLOWCONTROL
     if (sendThisNext[uart]) {
 #ifndef UART_XMEGA
@@ -556,8 +550,6 @@ static void serialTransmitInterrupt(uint8_t uart) {
 #ifdef FLOWCONTROL
     }
 #endif // FLOWCONTROL
-
-    PORTE.OUTSET = PIN6_bm;
 }
 
 ISR(SERIALRECIEVEINTERRUPT) {
