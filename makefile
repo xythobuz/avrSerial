@@ -1,4 +1,4 @@
-# Copyright (c) 2012, Thomas Buck <xythobuz@me.com>
+# Copyright (c) 2012 - 2017 Thomas Buck <xythobuz@xythobuz.de>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,8 +24,8 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-MCU = atmega2560
-F_CPU = 16000000
+MCU = atxmega128a1
+F_CPU = 20000000
 RM = rm -rf
 OPT = s
 CSTANDARD = gnu99

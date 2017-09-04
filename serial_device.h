@@ -1,7 +1,7 @@
 /*
  * serial_device.h
  *
- * Copyright (c) 2012, 2013, Thomas Buck <xythobuz@me.com>
+ * Copyright (c) 2012 - 2017 Thomas Buck <xythobuz@xythobuz.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -259,6 +259,50 @@ uint8_t const serialBits[UART_COUNT][UART_BITS] = {{
 }};
 #define SERIALRECIEVEINTERRUPT USART_RX_vect
 #define SERIALTRANSMITINTERRUPT USART_UDRE_vect
+
+#elif __AVR_ARCH__ >= 100
+
+// We're running on some kind of XMega AVR MCU
+#define UART_XMEGA
+
+// Interrupt level, in range 1 to 3
+#define UART_INTERRUPT_LEVEL 0x02
+#define UART_INTERRUPT_MASK 0x03
+
+#if defined(__AVR_ATxmega128A1__)
+
+#define UART_COUNT 8
+volatile USART_t * const serialRegisters[UART_COUNT] = {
+    &USARTC0,
+    &USARTC1,
+    &USARTD0,
+    &USARTD1,
+    &USARTE0,
+    &USARTE1,
+    &USARTF0,
+    &USARTF1
+};
+
+#define SERIALRECIEVEINTERRUPT   USARTC0_RXC_vect
+#define SERIALTRANSMITINTERRUPT  USARTC0_TXC_vect
+#define SERIALRECIEVEINTERRUPT1   USARTC1_RXC_vect
+#define SERIALTRANSMITINTERRUPT1  USARTC1_TXC_vect
+#define SERIALRECIEVEINTERRUPT2   USARTD0_RXC_vect
+#define SERIALTRANSMITINTERRUPT2  USARTD0_TXC_vect
+#define SERIALRECIEVEINTERRUPT3   USARTD1_RXC_vect
+#define SERIALTRANSMITINTERRUPT3  USARTD1_TXC_vect
+#define SERIALRECIEVEINTERRUPT4   USARTE0_RXC_vect
+#define SERIALTRANSMITINTERRUPT4  USARTE0_TXC_vect
+#define SERIALRECIEVEINTERRUPT5   USARTE1_RXC_vect
+#define SERIALTRANSMITINTERRUPT5  USARTE1_TXC_vect
+#define SERIALRECIEVEINTERRUPT6   USARTF0_RXC_vect
+#define SERIALTRANSMITINTERRUPT6  USARTF0_TXC_vect
+#define SERIALRECIEVEINTERRUPT7   USARTF1_RXC_vect
+#define SERIALTRANSMITINTERRUPT7  USARTF1_TXC_vect
+
+#else
+#error "AvrSerialLibrary has not been adapted to your XMega device!"
+#endif
 
 #else
 #error "AvrSerialLibrary not compatible with your MCU!"

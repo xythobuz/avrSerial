@@ -13,7 +13,7 @@ You can also flash it with
 
     make program
 
-just adjust your programmer type and port in the makefile.
+just adjust your MCU, programmer type and port in the makefile.
 
 For normal use, either include serial.c, serial.h and serial_device.h in your project, or build a statically-linked library by calling
 
@@ -23,11 +23,42 @@ and linking this to your project, as well as including serial.h.
 
 The more-or-less current Doxygen Documentation can be found [on the web](http://www.xythobuz.de/avrserial/) or as [PDF](http://www.xythobuz.de/avrserial.pdf)...
 
+## Supported MCUs
+
+The current list of supported / tested MCUs is:
+
+    AtMega8
+    AtMega16
+    AtMega32
+    AtMega8515
+    AtMega8535
+    AtMega323
+    AtMega168
+    AtMega328
+    AtMega48
+    AtMega88
+    AtMega168p
+    AtMega328p
+    AtMega48p
+    AtMega88p
+    AtMega2561
+    AtMega1281
+    AtMega1284p
+    AtMega2560
+    AtMega1280
+    AtMega640
+    AtTiny2313
+    AtTiny2313a
+    AtTiny4313
+    AtXMega128a1
+
+but support for many more AVR cpus could be added easily by changing serial_device.h without large changes to the library code itself.
+
 ## License
 
 Everything is released under a BSD 2-Clause License.
 
-Copyright (c) 2012, Thomas Buck
+Copyright (c) 2012 - 2017 Thomas Buck (xythobuz@xythobuz.de)
 All rights reserved.
 
 > Redistribution and use in source and binary forms, with or without

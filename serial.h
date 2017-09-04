@@ -1,7 +1,7 @@
 /*
  * serial.h
  *
- * Copyright (c) 2012, 2013, Thomas Buck <xythobuz@me.com>
+ * Copyright (c) 2012 - 2017 Thomas Buck <xythobuz@xythobuz.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
