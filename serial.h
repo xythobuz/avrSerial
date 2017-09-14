@@ -109,6 +109,12 @@ void serialWrite(uint8_t uart, uint8_t data);
  */
 void serialWriteString(uint8_t uart, const char *data);
 
+/** Send a 16bit integer.
+ *  \param uart UART Module to write to
+ *  \param num Unsigned integer to send as decimal ASCII
+ */
+void serialWriteInt16(uint8_t uart, uint16_t num);
+
 /** Check if the transmit buffer is full.
  *  \param uart UART Module to check
  *  \returns 1 if buffer is full, 0 if not

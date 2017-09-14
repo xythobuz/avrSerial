@@ -139,6 +139,27 @@ uint8_t serialAvailable(void) {
     return UART_COUNT;
 }
 
+void serialWriteInt16(uint8_t uart, uint16_t num) {
+    if (uart >= UART_COUNT) {
+        return;
+    }
+
+    uint8_t buf[5] = { 0, 0, 0, 0, 0 };
+    uint8_t n = 0;
+    if (num == 0) {
+        n = 1;
+    } else {
+        while (num > 0) {
+            buf[n++] = num % 10;
+            num /= 10;
+        }
+    }
+
+    for (int8_t i = n - 1; i >= 0; i--) {
+        serialWrite(uart, buf[i] + '0');
+    }
+}
+
 void serialInit(uint8_t uart, uint16_t baud) {
     if (uart >= UART_COUNT) {
         return;
@@ -188,7 +209,7 @@ void serialInit(uint8_t uart, uint16_t baud) {
     serialRegisters[uart]->BAUDCTRLA = (baud & 0x00FF);
 
     // Enable Interrupts
-    serialRegisters[uart]->CTRLA = UART_INTERRUPT_LEVEL << 4; // RXCINTLVL
+    serialRegisters[uart]->CTRLA = UART_INTERRUPT_LEVEL_RX << 4; // RXCINTLVL
 
     // Enable Receiver/Transmitter
     serialRegisters[uart]->CTRLB = 0x18;
@@ -256,7 +277,7 @@ void setFlow(uint8_t uart, uint8_t on) {
                 *serialRegisters[uart][SERIALA] |= (1 << serialBits[uart][SERIALUDRE]);
 #else // UART_XMEGA
                 // Enable Interrupt
-                serialRegisters[uart]->CTRLA |= UART_INTERRUPT_LEVEL << 2; // TXCINTLVL
+                serialRegisters[uart]->CTRLA |= UART_INTERRUPT_LEVEL_TX << 2; // TXCINTLVL
 
                 // Trigger Interrupt
                 serialTransmitInterrupt(uart);
@@ -277,7 +298,7 @@ void setFlow(uint8_t uart, uint8_t on) {
                 *serialRegisters[uart][SERIALA] |= (1 << serialBits[uart][SERIALUDRE]);
 #else // UART_XMEGA
                 // Enable Interrupt
-                serialRegisters[uart]->CTRLA |= UART_INTERRUPT_LEVEL << 2; // TXCINTLVL
+                serialRegisters[uart]->CTRLA |= UART_INTERRUPT_LEVEL_TX << 2; // TXCINTLVL
 
                 // Trigger Interrupt
                 serialTransmitInterrupt(uart);
@@ -348,7 +369,7 @@ uint8_t serialGet(uint8_t uart) {
                 *serialRegisters[uart][SERIALA] |= (1 << serialBits[uart][SERIALUDRE]);
 #else // UART_XMEGA
                 // Enable Interrupt
-                serialRegisters[uart]->CTRLA |= UART_INTERRUPT_LEVEL << 2; // TXCINTLVL
+                serialRegisters[uart]->CTRLA |= UART_INTERRUPT_LEVEL_TX << 2; // TXCINTLVL
 
                 // Trigger Interrupt
                 serialTransmitInterrupt(uart);
@@ -423,7 +444,7 @@ void serialWrite(uint8_t uart, uint8_t data) {
         *serialRegisters[uart][SERIALA] |= (1 << serialBits[uart][SERIALUDRE]);
 #else // UART_XMEGA
         // Enable Interrupt
-        serialRegisters[uart]->CTRLA |= UART_INTERRUPT_LEVEL << 2; // TXCINTLVL
+        serialRegisters[uart]->CTRLA |= UART_INTERRUPT_LEVEL_TX << 2; // TXCINTLVL
 
         // Trigger Interrupt
         serialTransmitInterrupt(uart);
@@ -505,7 +526,7 @@ static void serialReceiveInterrupt(uint8_t uart) {
             *serialRegisters[uart][SERIALA] |= (1 << serialBits[uart][SERIALUDRE]);
 #else // UART_XMEGA
             // Enable Interrupt
-            serialRegisters[uart]->CTRLA |= UART_INTERRUPT_LEVEL << 2; // TXCINTLVL
+            serialRegisters[uart]->CTRLA |= UART_INTERRUPT_LEVEL_TX << 2; // TXCINTLVL
 
             // Trigger Interrupt
             serialTransmitInterrupt(uart);
@@ -552,98 +573,55 @@ static void serialTransmitInterrupt(uint8_t uart) {
 #endif // FLOWCONTROL
 }
 
-ISR(SERIALRECIEVEINTERRUPT) {
-    // Receive complete
-    serialReceiveInterrupt(0);
-}
+// Receive complete
+#define ISR_RX(n) \
+    ISR(SERIALRECIEVEINTERRUPT ## n) { \
+        serialReceiveInterrupt(n); \
+    }
 
-ISR(SERIALTRANSMITINTERRUPT) {
-    // Data register empty
-    serialTransmitInterrupt(0);
-}
+// Data register empty
+#define ISR_TX(n) \
+    ISR(SERIALTRANSMITINTERRUPT ## n) { \
+        serialTransmitInterrupt(n); \
+    }
+
+ISR_RX(0)
+ISR_TX(0)
 
 #if UART_COUNT > 1
-ISR(SERIALRECIEVEINTERRUPT1) {
-    // Receive complete
-    serialReceiveInterrupt(1);
-}
-
-ISR(SERIALTRANSMITINTERRUPT1) {
-    // Data register empty
-    serialTransmitInterrupt(1);
-}
+ISR_RX(1)
+ISR_TX(1)
 #endif
 
 #if UART_COUNT > 2
-ISR(SERIALRECIEVEINTERRUPT2) {
-    // Receive complete
-    serialReceiveInterrupt(2);
-}
-
-ISR(SERIALTRANSMITINTERRUPT2) {
-    // Data register empty
-    serialTransmitInterrupt(2);
-}
+ISR_RX(2)
+ISR_TX(2)
 #endif
 
 #if UART_COUNT > 3
-ISR(SERIALRECIEVEINTERRUPT3) {
-    // Receive complete
-    serialReceiveInterrupt(3);
-}
-
-ISR(SERIALTRANSMITINTERRUPT3) {
-    // Data register empty
-    serialTransmitInterrupt(3);
-}
+ISR_RX(3)
+ISR_TX(3)
 #endif
 
 #if UART_COUNT > 4
-ISR(SERIALRECIEVEINTERRUPT4) {
-    // Receive complete
-    serialReceiveInterrupt(4);
-}
-
-ISR(SERIALTRANSMITINTERRUPT4) {
-    // Data register empty
-    serialTransmitInterrupt(4);
-}
+ISR_RX(4)
+ISR_TX(4)
 #endif
 
 #if UART_COUNT > 5
-ISR(SERIALRECIEVEINTERRUPT5) {
-    // Receive complete
-    serialReceiveInterrupt(5);
-}
-
-ISR(SERIALTRANSMITINTERRUPT5) {
-    // Data register empty
-    serialTransmitInterrupt(5);
-}
+ISR_RX(5)
+ISR_TX(5)
 #endif
 
 #if UART_COUNT > 6
-ISR(SERIALRECIEVEINTERRUPT6) {
-    // Receive complete
-    serialReceiveInterrupt(6);
-}
-
-ISR(SERIALTRANSMITINTERRUPT6) {
-    // Data register empty
-    serialTransmitInterrupt(6);
-}
+ISR_RX(6)
+ISR_TX(6)
 #endif
 
 #if UART_COUNT > 7
-ISR(SERIALRECIEVEINTERRUPT7) {
-    // Receive complete
-    serialReceiveInterrupt(7);
-}
-
-ISR(SERIALTRANSMITINTERRUPT7) {
-    // Data register empty
-    serialTransmitInterrupt(7);
-}
+ISR_RX(7)
+ISR_TX(7)
 #endif
+
 /** @} */
 
